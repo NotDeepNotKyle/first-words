@@ -1,0 +1,225 @@
+{
+  "mime": "audio/webm;codecs=opus",
+  "results": [
+    {
+      "name": "welcome modal shown on first launch",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "header uses child name",
+      "pass": true,
+      "extra": "Ava's First Words"
+    },
+    {
+      "name": "header shows current age",
+      "pass": true,
+      "extra": "Ava is 1 year 3 months old"
+    },
+    {
+      "name": "record button enters recording state",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "recording timer runs",
+      "pass": true,
+      "extra": "0:01"
+    },
+    {
+      "name": "preview appears after stop",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "preview shows word",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "preview playback starts",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "save blocked when word empty",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "8 entries saved in IndexedDB",
+      "pass": true,
+      "extra": "{\"n\":8}"
+    },
+    {
+      "name": "8 audio blobs stored, all non-empty",
+      "pass": true,
+      "extra": "sizes=13618,13618,13618,13300,13618,13618,19414,16516"
+    },
+    {
+      "name": "backup reminder banner shows",
+      "pass": true,
+      "extra": "\n    🗂️\n    8 recordings not backed upThey only live on this phone for now.\n    \n      Back upLater\n    "
+    },
+    {
+      "name": "stats card",
+      "pass": true,
+      "extra": " 6words 8recordings 6mfirst word"
+    },
+    {
+      "name": "data persists across reload",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "no welcome after setup",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "grouped by word: 6 groups",
+      "pass": true,
+      "extra": "[{\"key\":\"dada\",\"n\":2},{\"key\":\"mama\",\"n\":1},{\"key\":\"baby\",\"n\":1},{\"key\":\"bottle\",\"n\":1},{\"key\":\"elephant\",\"n\":2},{\"key\":\"ball\",\"n\":1}]"
+    },
+    {
+      "name": "elephant has 2 takes, dada has 2",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "default sort = first said (dada first)",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "takes sorted oldest→newest with ages",
+      "pass": true,
+      "extra": "[\"Jul 4, 20261y\",\"Oct 8, 20261y 3m\"]"
+    },
+    {
+      "name": "saved take plays (progress advances)",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "search filters words",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "search empty state offers to record",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "A–Z sort",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "timeline grouped by month (newest first)",
+      "pass": true,
+      "extra": "[\"October 2026\",\"September 2026\",\"August 2026\",\"July 2026\",\"May 2026\",\"April 2026\",\"January 2026\",\"December 2025\"]"
+    },
+    {
+      "name": "timeline filter by word",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "edit modal shows age then",
+      "pass": true,
+      "extra": "Age then: 1 year 1 month"
+    },
+    {
+      "name": "edit saved note + date",
+      "pass": true,
+      "extra": "\"2026-08-12T21:20:00.000Z\""
+    },
+    {
+      "name": "delete asks for confirmation",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "cancel keeps entry",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "confirm deletes entry + audio",
+      "pass": true,
+      "extra": "{\"n\":7,\"audioGone\":true}"
+    },
+    {
+      "name": "export downloads zip",
+      "pass": true,
+      "extra": "first-words-ava-2026-10-08.zip 108696 bytes"
+    },
+    {
+      "name": "banner cleared after backup",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "zip valid (CRC ok) with data.json + README + 7 audio files",
+      "pass": true,
+      "extra": "[\"data.json\",\"README.txt\",\"audio/0001_2025-12-28_dada.webm\",\"audio/0002_2026-01-20_mama.webm\"]"
+    },
+    {
+      "name": "exported audio files decode with ffprobe",
+      "pass": true,
+      "extra": "opus e.g. 0001_2025-12-28_dada.webm"
+    },
+    {
+      "name": "import restores 7 recordings into empty app",
+      "pass": true,
+      "extra": "Restored 7 recordings"
+    },
+    {
+      "name": "import restores name + birthday",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "restored audio plays",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "notes restored",
+      "pass": true,
+      "extra": "5"
+    },
+    {
+      "name": "re-import skips duplicates",
+      "pass": true,
+      "extra": "Restored 0 recordings · 7 already here"
+    },
+    {
+      "name": "import of re-zipped (deflate, nested folder) backup",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "service worker active",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "manifest has 192+512 icons",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "app loads offline with data",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "no JS errors in console",
+      "pass": true,
+      "extra": ""
+    }
+  ]
+}

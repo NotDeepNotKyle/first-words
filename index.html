@@ -1,0 +1,1089 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4806F">
+<meta name="description" content="Record and keep the sound of your little one's first words.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="First Words">
+<title>First Words</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+:root{
+  --bg:#FFF8EE; --paper:#FFFFFF; --ink:#3D3330; --muted:#8C7F78; --line:#F0E4D6;
+  --coral:#F4806F; --coral-d:#E2604E; --coral-l:#FDE3DE; --sage:#8DB596; --sage-l:#E4F0E6;
+  --sun:#F6C35B; --sun-l:#FDF1D3; --sky:#86B7D6; --sky-l:#E3EFF7;
+  --radius:20px; --shadow:0 2px 0 rgba(61,51,48,.04), 0 8px 24px rgba(160,110,80,.10);
+  --font: ui-rounded, "SF Pro Rounded", "Nunito", "Varela Round", "Quicksand", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --tabh: 68px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.4}
+body{min-height:100vh;min-height:100dvh;
+  background-image:radial-gradient(circle at 12% 8%, #FFEBDD 0, transparent 38%),radial-gradient(circle at 92% 30%, #FFF1CF 0, transparent 30%);
+  background-attachment:fixed}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+.hidden{display:none!important}
+.wrap{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(var(--tabh) + env(safe-area-inset-bottom) + 24px)}
+
+header.top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.logo{width:44px;height:44px;border-radius:14px;flex:none;box-shadow:var(--shadow)}
+.titles{flex:1;min-width:0}
+.titles h1{font-size:22px;margin:0;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.titles p{margin:0;color:var(--muted);font-size:14px}
+.iconbtn{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--paper);box-shadow:var(--shadow)}
+.iconbtn svg{width:22px;height:22px}
+
+.card{background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:14px;border:1px solid var(--line)}
+.card h2{font-size:17px;margin:0 0 10px;font-weight:800}
+.label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em}
+.field{width:100%;border:2px solid var(--line);border-radius:14px;padding:12px 14px;background:#FFFDF9;font-size:17px;outline:none;transition:border-color .15s}
+.field:focus{border-color:var(--coral)}
+.field.big{font-size:26px;font-weight:800;text-align:center;padding:14px}
+textarea.field{resize:vertical;min-height:64px}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+.mt{margin-top:12px}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center}
+.chip{padding:7px 13px;border-radius:999px;background:var(--sun-l);font-weight:700;font-size:14px;color:#8A6417;border:1px solid #F7E2AE}
+.chip.done{background:var(--sage-l);color:#3F6B49;border-color:#CFE3D3}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 18px;border-radius:14px;font-weight:800;font-size:16px;background:var(--coral);color:#fff;box-shadow:0 3px 0 var(--coral-d);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--coral-d)}
+.btn.ghost{background:#FFF3EC;color:var(--coral-d);box-shadow:0 3px 0 #F6D8CC}
+.btn.sage{background:var(--sage);box-shadow:0 3px 0 #6C9875}
+.btn.danger{background:#fff;color:#C2483A;box-shadow:0 3px 0 #F1D4CF;border:1px solid #F1D4CF}
+.btn.block{width:100%}
+.link{color:var(--coral-d);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+
+.recorder{text-align:center;padding:22px 18px 20px}
+.recbtn{position:relative;width:176px;height:176px;border-radius:50%;margin:34px auto 22px;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%, #FF9C8C, var(--coral) 60%, var(--coral-d));color:#fff;
+  box-shadow:0 10px 0 #CF5444, 0 18px 40px rgba(226,96,78,.35);transition:transform .1s, box-shadow .1s}
+.recbtn:active{transform:translateY(6px);box-shadow:0 4px 0 #CF5444, 0 10px 24px rgba(226,96,78,.3)}
+.recbtn svg{width:70px;height:70px}
+.recbtn .ring{position:absolute;inset:-12px;border-radius:50%;border:6px solid var(--coral-l);transform:scale(var(--lvl,1));transition:transform .08s;pointer-events:none}
+.recbtn.recording{background:radial-gradient(circle at 35% 30%, #FF7A6A, #E5483A 60%, #C7392D)}
+.recbtn.recording .ring{border-color:#F9B9AF;animation:pulse 1.4s ease-out infinite}
+@keyframes pulse{0%{opacity:1}100%{opacity:.25}}
+.rechint{font-weight:800;font-size:18px;margin-top:14px}
+.rectime{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700;min-height:22px}
+
+.preview{background:var(--sun-l);border:1px dashed #EBCB7F;border-radius:18px;padding:14px;margin-top:16px;text-align:left}
+.preview .ptitle{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.preview .ptitle b{font-size:18px}
+
+.play{--p:0;position:relative;flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#fff;
+  background:conic-gradient(var(--coral-d) calc(var(--p)*1turn), var(--coral) 0)}
+.play::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--coral)}
+.play svg{position:relative;z-index:1;width:22px;height:22px}
+.play .i-pause{display:none}
+.play.playing .i-play{display:none}
+.play.playing .i-pause{display:block}
+.play.sm{width:40px;height:40px}
+.play.sm svg{width:18px;height:18px}
+
+.toolbar{display:flex;gap:10px;margin-bottom:14px;align-items:center}
+.search{position:relative;flex:1}
+.search input{padding-left:42px;font-size:16px}
+.search svg{position:absolute;left:14px;top:50%;width:20px;height:20px;transform:translateY(-50%);color:var(--muted)}
+select.field{padding:11px 10px;width:auto;font-size:15px;flex:none}
+
+.word{padding:0;overflow:hidden}
+.whead{display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;width:100%;text-align:left}
+.whead .wt{flex:1;min-width:0}
+.whead .wname{font-size:22px;font-weight:800;line-height:1.15;word-break:break-word}
+.whead .wmeta{color:var(--muted);font-size:13.5px;margin-top:2px}
+.badge{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 8px;border-radius:999px;background:var(--sky-l);color:#3C6E8F;font-weight:800;font-size:13px}
+.chev{width:22px;height:22px;color:var(--muted);transition:transform .2s;flex:none;display:block}
+.word.open .chev{transform:rotate(180deg)}
+.takes{border-top:1px dashed var(--line);padding:6px 10px 12px;display:none}
+.word.open .takes{display:block}
+
+.take{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid #F7EFE6}
+.take:last-of-type{border-bottom:0}
+.take .tt{flex:1;min-width:0}
+.take .tdate{font-weight:700}
+.tage{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--coral-l);color:var(--coral-d);font-size:12.5px;font-weight:800;vertical-align:2px}
+.take .tnote{color:var(--muted);font-size:14px;margin-top:2px;word-break:break-word}
+.take .tword{font-size:19px;font-weight:800}
+.edit{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--muted);flex:none}
+.edit svg{width:20px;height:20px}
+.addtake{margin:8px 6px 0;width:calc(100% - 12px)}
+
+.month{display:flex;align-items:baseline;justify-content:space-between;margin:20px 4px 8px}
+.month:first-child{margin-top:4px}
+.month h3{margin:0;font-size:18px;font-weight:800}
+.month span{color:var(--coral-d);font-weight:800;font-size:14px}
+.tl{padding:4px 10px}
+
+.empty{text-align:center;padding:36px 20px;color:var(--muted)}
+.empty .big{font-size:46px;margin-bottom:6px}
+.empty b{display:block;color:var(--ink);font-size:18px;margin-bottom:4px}
+
+.banner{display:flex;gap:12px;align-items:center;background:var(--sage-l);border:1px solid #CFE3D3;border-radius:18px;padding:12px 14px;margin-bottom:14px}
+.banner .bt{flex:1;font-size:14.5px}
+.banner b{display:block;font-size:15.5px}
+.banner .btn{padding:9px 13px;font-size:14px}
+.banner .x{color:var(--muted);font-size:13px;font-weight:700;padding:6px}
+
+.stats{display:flex;gap:10px;margin-bottom:14px}
+.stat{flex:1;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:10px 12px;text-align:center;box-shadow:var(--shadow)}
+.stat b{display:block;font-size:24px;font-weight:800;color:var(--coral-d)}
+.stat span{font-size:12.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+
+.warn{background:#FFF0E6;border:1px solid #F7D2BD;color:#8A4A2B;border-radius:14px;padding:10px 12px;font-size:14px;margin-top:12px;text-align:left}
+
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(255,253,249,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .in{max-width:560px;margin:0 auto;display:flex;height:var(--tabh)}
+nav.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12.5px;font-weight:800;color:var(--muted)}
+nav.tabs button svg{width:26px;height:26px}
+nav.tabs button.on{color:var(--coral-d)}
+
+.modal{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(61,51,48,.38);animation:fade .15s}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;max-height:92dvh;overflow:auto;border-radius:26px 26px 0 0;padding:10px 18px calc(18px + env(safe-area-inset-bottom));animation:up .22s cubic-bezier(.2,.8,.3,1)}
+.sheet .grab{width:44px;height:5px;border-radius:9px;background:#E6D6C6;margin:0 auto 12px}
+.sheet h2{margin:0 0 14px;font-size:21px;font-weight:800}
+.sheet .sub{color:var(--muted);margin:-8px 0 16px;font-size:14.5px}
+.sheet .fg{margin-bottom:14px}
+.sheet .actions{display:flex;gap:10px;margin-top:6px}
+.sheet .actions .btn{flex:1}
+.sheet hr{border:0;border-top:1px dashed var(--line);margin:20px 0}
+@media(min-width:600px){.modal{align-items:center}.sheet{border-radius:26px;padding-bottom:22px}}
+@keyframes fade{from{opacity:0}}
+@keyframes up{from{transform:translateY(40px);opacity:.4}}
+.small{font-size:13.5px;color:var(--muted)}
+
+.toast{position:fixed;left:50%;bottom:calc(var(--tabh) + env(safe-area-inset-bottom) + 14px);transform:translateX(-50%);z-index:60;background:var(--ink);color:#fff;
+  padding:11px 18px;border-radius:999px;font-weight:700;font-size:15px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:90vw;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img class="logo" src="icons/icon.svg" alt="">
+    <div class="titles">
+      <h1 id="appTitle">First Words</h1>
+      <p id="appSub">Every little word, kept forever</p>
+    </div>
+    <button class="iconbtn" id="settingsBtn" aria-label="Settings and backup">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </header>
+
+  <div id="banner"></div>
+
+  <section id="view-record" data-view="record">
+    <div class="card recorder">
+      <label class="label" for="wordInput">What did she say?</label>
+      <input id="wordInput" class="field big" placeholder="e.g. elephant" autocomplete="off" autocapitalize="none" spellcheck="false" list="wordList" enterkeyhint="done">
+      <datalist id="wordList"></datalist>
+      <div class="chips" id="suggestChips"></div>
+
+      <button class="recbtn mt" id="recBtn" aria-label="Record">
+        <span class="ring"></span>
+        <svg id="micIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14.5a3.5 3.5 0 0 0 3.5-3.5V5.5a3.5 3.5 0 1 0-7 0V11a3.5 3.5 0 0 0 3.5 3.5z"/><path d="M18.5 11a1 1 0 1 0-2 0 4.5 4.5 0 0 1-9 0 1 1 0 1 0-2 0 6.5 6.5 0 0 0 5.5 6.4V20H9a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2h-2v-2.6a6.5 6.5 0 0 0 5.5-6.4z"/></svg>
+        <svg id="stopIcon" class="hidden" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="3"/></svg>
+      </button>
+      <div class="rechint" id="recHint">Tap to record</div>
+      <div class="rectime" id="recTime"></div>
+      <div id="micWarn"></div>
+
+      <div class="preview hidden" id="preview">
+        <div class="ptitle">
+          <button class="play" id="previewPlay" aria-label="Play preview"></button>
+          <div><b id="previewWord">New recording</b><div class="small" id="previewDur"></div></div>
+        </div>
+        <div class="fg">
+          <label class="label" for="recDate">When</label>
+          <input id="recDate" class="field" type="datetime-local">
+        </div>
+        <div class="fg mt">
+          <label class="label" for="recNote">Note (optional)</label>
+          <textarea id="recNote" class="field" rows="2" placeholder="Pointing at the zoo book, very proud of herself"></textarea>
+        </div>
+        <div class="row mt">
+          <button class="btn ghost" id="discardBtn">Redo</button>
+          <button class="btn sage" id="saveBtn">Save it</button>
+        </div>
+      </div>
+      <p class="small mt">or <button class="link" id="addFileBtn">add an existing audio file</button></p>
+      <input type="file" id="audioFileInput" accept="audio/*,video/mp4,video/quicktime,.m4a,.mp3,.wav,.webm,.ogg,.aac" class="hidden">
+    </div>
+
+    <div class="stats" id="stats"></div>
+    <div id="recentWrap"></div>
+  </section>
+
+  <section id="view-words" data-view="words" class="hidden">
+    <div class="toolbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="searchWords" class="field" type="search" placeholder="Find a word" autocomplete="off" autocapitalize="none">
+      </div>
+      <select id="sortWords" class="field" aria-label="Sort words">
+        <option value="first">First said</option>
+        <option value="recent">Recent</option>
+        <option value="az">A–Z</option>
+      </select>
+    </div>
+    <div id="wordsList"></div>
+  </section>
+
+  <section id="view-timeline" data-view="timeline" class="hidden">
+    <div class="toolbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="searchTimeline" class="field" type="search" placeholder="Filter by word" autocomplete="off" autocapitalize="none">
+      </div>
+      <select id="sortTimeline" class="field" aria-label="Timeline order">
+        <option value="desc">Newest</option>
+        <option value="asc">Oldest</option>
+      </select>
+    </div>
+    <div id="timelineList"></div>
+  </section>
+</div>
+
+<nav class="tabs">
+  <div class="in">
+    <button data-tab="record" class="on">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+      Record
+    </button>
+    <button data-tab="words">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4"/></svg>
+      Words
+    </button>
+    <button data-tab="timeline">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+      Timeline
+    </button>
+  </div>
+</nav>
+
+<div id="modalRoot"></div>
+<script>
+'use strict';
+/* First Words: local-only audio memory book.
+   Data lives in IndexedDB on this device. Use Settings > Back up to export. */
+
+const ICON_PLAY = '<svg class="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.2-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg>';
+const ICON_PAUSE = '<svg class="i-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4.5" height="14" rx="1.5"/><rect x="13.5" y="5" width="4.5" height="14" rx="1.5"/></svg>';
+const ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg>';
+const ICON_CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+const PLAY_INNER = ICON_PLAY + ICON_PAUSE;
+
+const COMMON_WORDS = ['mama','dada','baby','bottle','ball','dog','cat','hi','bye-bye','no','more','milk','up','uh-oh','banana','duck','book','elephant','water','night-night','thank you','I love you'];
+
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const normWord = (w) => String(w || '').trim().replace(/\s+/g, ' ');
+const wordKey = (w) => normWord(w).toLowerCase();
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+
+/* ---------------- IndexedDB ---------------- */
+const DB_NAME = 'first-words';
+let db;
+function reqP(r) { return new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+function openDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(DB_NAME, 1);
+    r.onupgradeneeded = () => {
+      const d = r.result;
+      if (!d.objectStoreNames.contains('entries')) d.createObjectStore('entries', { keyPath: 'id' });
+      if (!d.objectStoreNames.contains('audio')) d.createObjectStore('audio');
+      if (!d.objectStoreNames.contains('meta')) d.createObjectStore('meta');
+    };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function txDone(t) { return new Promise((res, rej) => { t.oncomplete = () => res(); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error || new Error('Transaction aborted')); }); }
+const dbAllEntries = () => reqP(db.transaction('entries').objectStore('entries').getAll());
+const dbGetAudio = (id) => reqP(db.transaction('audio').objectStore('audio').get(id));
+const dbGetMeta = (k) => reqP(db.transaction('meta').objectStore('meta').get(k));
+function dbSetMeta(k, v) { const t = db.transaction('meta', 'readwrite'); t.objectStore('meta').put(v, k); return txDone(t); }
+function dbPutEntry(entry, audioBuf) {
+  const t = db.transaction(['entries', 'audio'], 'readwrite');
+  t.objectStore('entries').put(entry);
+  if (audioBuf) t.objectStore('audio').put(audioBuf, entry.id);
+  return txDone(t);
+}
+function dbDeleteEntry(id) {
+  const t = db.transaction(['entries', 'audio'], 'readwrite');
+  t.objectStore('entries').delete(id);
+  t.objectStore('audio').delete(id);
+  return txDone(t);
+}
+
+/* ---------------- state ---------------- */
+const state = {
+  view: 'record',
+  entries: [],          // metadata only (audio is loaded lazily)
+  settings: { name: '', birthdate: '' },
+  backup: { lastAt: null, snoozeUntil: 0 },
+  open: new Set(),      // expanded word groups
+};
+
+/* ---------------- dates & ages ---------------- */
+function parseBirth(s) { if (!s) return null; const [y, m, d] = s.split('-').map(Number); return y ? new Date(y, (m || 1) - 1, d || 1) : null; }
+function ageAt(dateLike) {
+  const b = parseBirth(state.settings.birthdate); if (!b) return '';
+  const d = new Date(dateLike);
+  if (isNaN(d)) return '';
+  if (d < b) return 'before birth';
+  let months = (d.getFullYear() - b.getFullYear()) * 12 + (d.getMonth() - b.getMonth());
+  if (d.getDate() < b.getDate()) months--;
+  if (months < 1) { const days = Math.floor((d - b) / 86400000); return days < 14 ? days + 'd' : Math.floor(days / 7) + 'w'; }
+  const y = Math.floor(months / 12), m = months % 12;
+  if (y === 0) return m + 'm';
+  return m ? `${y}y ${m}m` : `${y}y`;
+}
+function ageLong(dateLike) {
+  const a = ageAt(dateLike); if (!a || a === 'before birth') return a;
+  const unit = { y: 'year', m: 'month', w: 'week', d: 'day' };
+  return a.replace(/(\d+)([ymwd])/g, (_, n, u) => `${n} ${unit[u]}${n === '1' ? '' : 's'}`);
+}
+const pad = (n) => String(n).padStart(2, '0');
+function toLocalInput(d) { d = new Date(d); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+function fromLocalInput(s) { if (!s) return null; const d = new Date(s); return isNaN(d) ? null : d.toISOString(); }
+const fmtDate = (d) => new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+const fmtDateTime = (d) => new Date(d).toLocaleString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+const fmtMonth = (d) => new Date(d).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+const fmtDur = (s) => (s && isFinite(s)) ? `${Math.floor(s / 60)}:${pad(Math.floor(s % 60))}` : '';
+const childName = () => normWord(state.settings.name);
+
+/* ---------------- audio playback ---------------- */
+const player = new Audio();
+player.preload = 'auto';
+let playingId = null;
+const urlCache = new Map();  // id -> objectURL, prefetched so iOS can start playback inside the tap gesture
+
+async function audioUrl(id) {
+  if (urlCache.has(id)) return urlCache.get(id);
+  const raw = await dbGetAudio(id);
+  if (!raw) return null;
+  const entry = state.entries.find((e) => e.id === id);
+  const blob = raw instanceof Blob ? raw : new Blob([raw], { type: (entry && entry.mime) || 'audio/mp4' });
+  const url = URL.createObjectURL(blob);
+  urlCache.set(id, url);
+  return url;
+}
+function prefetchAudio(ids) {
+  let i = 0;
+  const next = () => {
+    const batch = ids.slice(i, i + 8); i += 8;
+    if (!batch.length) return;
+    Promise.all(batch.map((id) => audioUrl(id).catch(() => null))).then(() => setTimeout(next, 30));
+  };
+  next();
+}
+function setPlayingUI() {
+  $$('.play[data-id]').forEach((b) => {
+    const on = b.dataset.id === playingId;
+    b.classList.toggle('playing', on && !player.paused);
+    if (!on) b.style.setProperty('--p', 0);
+  });
+  $('#previewPlay').classList.toggle('playing', playingId === '__preview' && !player.paused);
+}
+async function togglePlay(id) {
+  if (playingId === id && player.src) {
+    if (player.paused) player.play().catch(playErr); else player.pause();
+    return;
+  }
+  playingId = id;
+  let url = urlCache.get(id);
+  if (url) { player.src = url; player.play().catch(playErr); return; } // synchronous: keeps iOS user-gesture
+  setPlayingUI();
+  url = await audioUrl(id);
+  if (!url) { toast('Could not find that recording'); return; }
+  if (playingId !== id) return;
+  player.src = url; player.play().catch(playErr);
+}
+function playErr(e) {
+  if (e && e.name === 'AbortError') return;
+  console.warn(e); toast('This audio could not be played on this device'); setPlayingUI();
+}
+player.addEventListener('play', setPlayingUI);
+player.addEventListener('pause', setPlayingUI);
+player.addEventListener('ended', setPlayingUI);
+player.addEventListener('timeupdate', () => {
+  if (!playingId) return;
+  const e = state.entries.find((x) => x.id === playingId);
+  const dur = isFinite(player.duration) && player.duration > 0 ? player.duration : ((e && e.duration) || 0);
+  const p = dur ? Math.min(1, player.currentTime / dur) : 0;
+  $$(`.play[data-id="${CSS.escape(playingId)}"]`).forEach((b) => b.style.setProperty('--p', p));
+});
+
+/* ---------------- recording ---------------- */
+// Prefer AAC in .m4a: it plays everywhere (iPhone, Android, Mac, Windows) and will for decades.
+// Safari/iOS records AAC mp4 natively. Chrome without an AAC encoder uses WebM/Opus (plays in all modern browsers & VLC).
+const AAC_TYPES = ['audio/mp4;codecs=mp4a.40.2', 'audio/mp4;codecs=aac'];
+const OTHER_TYPES = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
+const UA = navigator.userAgent;
+const IS_WEBKIT = /iPhone|iPad|iPod/.test(UA) || (/Safari/.test(UA) && !/Chrome|Chromium|Edg|OPR|Android/.test(UA));
+const MAX_SECONDS = 90;
+const rec = { mr: null, stream: null, chunks: [], start: 0, duration: 0, timer: null, audioCtx: null, raf: null, pending: null, previewUrl: null };
+
+function pickMime() {
+  if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
+  const ok = (t) => { try { return MediaRecorder.isTypeSupported(t); } catch (e) { return false; } };
+  const aac = AAC_TYPES.find(ok); if (aac) return aac;
+  if (IS_WEBKIT && ok('audio/mp4')) return 'audio/mp4'; // Safari's mp4 = AAC
+  return OTHER_TYPES.find(ok) || '';
+}
+function micProblem() {
+  if (!window.isSecureContext) return 'The microphone only works when this app is opened over https:// (or on localhost). Host it on an HTTPS site like GitHub Pages.';
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return 'This browser does not allow microphone access. Try Safari on iPhone or Chrome on Android.';
+  if (!window.MediaRecorder) return 'This browser cannot record audio. Please update iOS / your browser, or add an existing audio file below.';
+  return '';
+}
+const isRecording = () => !!(rec.mr && rec.mr.state === 'recording');
+async function startRecording() {
+  const problem = micProblem();
+  if (problem) { $('#micWarn').innerHTML = `<div class="warn">${esc(problem)}</div>`; return; }
+  discardPending();
+  player.pause();
+  try {
+    rec.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (err) {
+    const msg = err && err.name === 'NotAllowedError'
+      ? 'Microphone permission was blocked. Allow the microphone for this site in your browser settings, then try again.'
+      : 'Could not start the microphone (' + esc(err && (err.message || err.name)) + ').';
+    $('#micWarn').innerHTML = `<div class="warn">${msg}</div>`;
+    return;
+  }
+  $('#micWarn').innerHTML = '';
+  const mimeType = pickMime();
+  try { rec.mr = new MediaRecorder(rec.stream, mimeType ? { mimeType } : undefined); }
+  catch (e) { rec.mr = new MediaRecorder(rec.stream); }
+  rec.chunks = [];
+  rec.mr.ondataavailable = (e) => { if (e.data && e.data.size) rec.chunks.push(e.data); };
+  rec.mr.onstop = onRecordingStopped;
+  rec.mr.start(); // no timeslice: most reliable on iOS Safari
+  rec.start = performance.now();
+  setRecUI(true);
+  $('#recTime').textContent = '0:00';
+  rec.timer = setInterval(() => {
+    const s = (performance.now() - rec.start) / 1000;
+    $('#recTime').textContent = fmtDur(s) || '0:00';
+    if (s >= MAX_SECONDS) stopRecording();
+  }, 200);
+  startMeter(rec.stream);
+}
+function stopRecording() {
+  if (!isRecording()) return;
+  rec.duration = (performance.now() - rec.start) / 1000;
+  rec.mr.stop();
+  clearInterval(rec.timer);
+  stopMeter();
+  setRecUI(false);
+  $('#recHint').textContent = 'Saving…';
+}
+function onRecordingStopped() {
+  if (rec.stream) rec.stream.getTracks().forEach((t) => t.stop());
+  rec.stream = null;
+  const type = ((rec.mr && rec.mr.mimeType) || (rec.chunks[0] && rec.chunks[0].type) || 'audio/mp4').split(';')[0];
+  const blob = new Blob(rec.chunks, { type });
+  rec.mr = null; rec.chunks = [];
+  if (!blob.size) { setRecUI(false); toast('Nothing was recorded, try again'); return; }
+  showPending(blob, type, rec.duration);
+}
+function showPending(blob, mime, duration, recordedAt) {
+  rec.pending = { blob, mime, duration };
+  if (rec.previewUrl) URL.revokeObjectURL(rec.previewUrl);
+  rec.previewUrl = URL.createObjectURL(blob);
+  $('#preview').classList.remove('hidden');
+  $('#previewDur').textContent = (fmtDur(duration) ? fmtDur(duration) + ' · ' : '') + 'not saved yet';
+  $('#recDate').value = toLocalInput(recordedAt || new Date());
+  $('#recNote').value = '';
+  updatePreviewWord();
+  $('#recHint').textContent = 'Listen back, then save';
+  $('#recTime').textContent = '';
+  $('#preview').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function discardPending() {
+  rec.pending = null;
+  if (playingId === '__preview') { player.pause(); player.removeAttribute('src'); playingId = null; }
+  if (rec.previewUrl) { URL.revokeObjectURL(rec.previewUrl); rec.previewUrl = null; }
+  $('#preview').classList.add('hidden');
+  $('#recHint').textContent = 'Tap to record';
+  $('#recTime').textContent = '';
+  setPlayingUI();
+}
+function setRecUI(on) {
+  $('#recBtn').classList.toggle('recording', on);
+  $('#recBtn').setAttribute('aria-label', on ? 'Stop recording' : 'Record');
+  $('#micIcon').classList.toggle('hidden', on);
+  $('#stopIcon').classList.toggle('hidden', !on);
+  $('#recHint').textContent = on ? 'Listening… tap to stop' : 'Tap to record';
+}
+function startMeter(stream) {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    rec.audioCtx = new AC();
+    const src = rec.audioCtx.createMediaStreamSource(stream);
+    const an = rec.audioCtx.createAnalyser(); an.fftSize = 512; src.connect(an);
+    const data = new Uint8Array(an.fftSize);
+    const ring = $('#recBtn .ring');
+    const tick = () => {
+      an.getByteTimeDomainData(data);
+      let sum = 0; for (let i = 0; i < data.length; i++) { const v = (data[i] - 128) / 128; sum += v * v; }
+      ring.style.setProperty('--lvl', (1 + Math.min(0.16, Math.sqrt(sum / data.length) * 1.6)).toFixed(3));
+      rec.raf = requestAnimationFrame(tick);
+    };
+    tick();
+  } catch (e) { console.warn('meter', e); }
+}
+function stopMeter() {
+  cancelAnimationFrame(rec.raf); rec.raf = null;
+  $('#recBtn .ring').style.setProperty('--lvl', 1);
+  if (rec.audioCtx) { rec.audioCtx.close().catch(() => {}); rec.audioCtx = null; }
+}
+function updatePreviewWord() {
+  const w = normWord($('#wordInput').value);
+  $('#previewWord').textContent = w ? `“${w}”` : 'New recording';
+}
+async function savePending() {
+  if (!rec.pending) return;
+  const word = normWord($('#wordInput').value);
+  if (!word) {
+    const inp = $('#wordInput');
+    inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake');
+    inp.focus(); toast('Type the word first');
+    return;
+  }
+  const recordedAt = fromLocalInput($('#recDate').value) || new Date().toISOString();
+  const buf = await rec.pending.blob.arrayBuffer();
+  const entry = {
+    id: uid(), word, recordedAt, note: $('#recNote').value.trim(),
+    mime: rec.pending.mime, duration: rec.pending.duration || null, size: buf.byteLength,
+    createdAt: new Date().toISOString(),
+  };
+  try { await dbPutEntry(entry, buf); }
+  catch (e) { console.error(e); toast('Could not save: ' + (e.message || e)); return; }
+  state.entries.push(entry);
+  urlCache.set(entry.id, URL.createObjectURL(new Blob([buf], { type: entry.mime })));
+  discardPending();
+  $('#wordInput').value = '';
+  requestPersist();
+  toast(`Saved “${word}” 💛`);
+  renderAll();
+}
+async function addAudioFile(file) {
+  if (!file) return;
+  const mime = file.type || guessMime(file.name);
+  const url = URL.createObjectURL(file);
+  const duration = await new Promise((res) => {
+    const a = new Audio(); a.preload = 'metadata';
+    a.onloadedmetadata = () => res(isFinite(a.duration) ? a.duration : null);
+    a.onerror = () => res(null); setTimeout(() => res(null), 4000); a.src = url;
+  });
+  URL.revokeObjectURL(url);
+  showPending(file.slice(0, file.size, mime), mime, duration, file.lastModified ? new Date(file.lastModified) : new Date());
+  $('#recHint').textContent = 'Check the date, then save';
+}
+function guessMime(name) {
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  return ({ m4a: 'audio/mp4', mp4: 'audio/mp4', mov: 'video/quicktime', mp3: 'audio/mpeg', wav: 'audio/wav', webm: 'audio/webm', ogg: 'audio/ogg', aac: 'audio/aac', caf: 'audio/x-caf' })[ext] || 'audio/mp4';
+}
+function extFor(mime) {
+  mime = (mime || '').split(';')[0];
+  return ({ 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/webm': 'webm', 'audio/ogg': 'ogg', 'audio/mpeg': 'mp3', 'audio/wav': 'wav', 'audio/x-wav': 'wav', 'video/mp4': 'mp4', 'video/quicktime': 'mov', 'audio/x-caf': 'caf' })[mime] || 'bin';
+}
+async function requestPersist() {
+  try { if (navigator.storage && navigator.storage.persist && !(await navigator.storage.persisted())) await navigator.storage.persist(); } catch (e) {}
+}
+
+/* ---------------- rendering ---------------- */
+function playBtn(id, cls = '') { return `<button class="play ${cls}" data-id="${esc(id)}" aria-label="Play">${PLAY_INNER}</button>`; }
+function ageTag(d) { const a = ageAt(d); return a ? `<span class="tage">${esc(a)}</span>` : ''; }
+function groupByWord(entries) {
+  const m = new Map();
+  for (const e of entries) {
+    const k = wordKey(e.word);
+    if (!m.has(k)) m.set(k, { key: k, word: e.word, takes: [] });
+    m.get(k).takes.push(e);
+  }
+  for (const g of m.values()) {
+    g.takes.sort((a, b) => new Date(a.recordedAt) - new Date(b.recordedAt)); // oldest first: hear it change
+    g.first = g.takes[0].recordedAt; g.last = g.takes[g.takes.length - 1].recordedAt;
+    g.word = g.takes[g.takes.length - 1].word;
+  }
+  return [...m.values()];
+}
+function matches(e, q) { return !q || wordKey(e.word).includes(q) || (e.note || '').toLowerCase().includes(q); }
+
+function renderHeader() {
+  const n = childName();
+  $('#appTitle').textContent = n ? `${n}'s First Words` : 'First Words';
+  const age = state.settings.birthdate ? ageLong(new Date()) : '';
+  $('#appSub').textContent = n && age && age !== 'before birth' ? `${n} is ${age} old` : (n ? 'Every little word, kept forever' : 'Tap ⚙︎ to add her name & birthday');
+  document.title = n ? `${n}'s First Words` : 'First Words';
+}
+function backupStatus() {
+  const lastAt = state.backup.lastAt ? new Date(state.backup.lastAt) : null;
+  const unsaved = state.entries.filter((e) => !lastAt || new Date(e.createdAt) > lastAt).length;
+  const days = lastAt ? (Date.now() - lastAt) / 86400000 : Infinity;
+  const due = unsaved > 0 && (lastAt ? (unsaved >= 5 || days >= 14) : state.entries.length >= 3);
+  return { lastAt, unsaved, due };
+}
+function renderBanner() {
+  const el = $('#banner');
+  const { lastAt, unsaved, due } = backupStatus();
+  if (!due || Date.now() < (state.backup.snoozeUntil || 0)) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="banner" role="status">
+    <div style="font-size:26px">🗂️</div>
+    <div class="bt"><b>${unsaved} recording${unsaved === 1 ? '' : 's'} not backed up</b>${lastAt ? 'Last backup ' + esc(fmtDate(lastAt)) : 'They only live on this phone for now.'}</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+      <button class="btn sage" data-act="backup">Back up</button><button class="x" data-act="snooze">Later</button>
+    </div></div>`;
+}
+function renderSuggestions() {
+  const have = new Set(state.entries.map((e) => wordKey(e.word)));
+  const words = groupByWord(state.entries).sort((a, b) => new Date(b.last) - new Date(a.last)).map((g) => g.word);
+  $('#wordList').innerHTML = [...new Set([...words, ...COMMON_WORDS])].map((w) => `<option value="${esc(w)}">`).join('');
+  const recent = words.slice(0, 3);
+  const fresh = COMMON_WORDS.filter((w) => !have.has(wordKey(w))).slice(0, 7 - recent.length);
+  $('#suggestChips').innerHTML = recent.map((w) => `<button class="chip done" data-word="${esc(w)}">${esc(w)} ✓</button>`).join('') +
+    fresh.map((w) => `<button class="chip" data-word="${esc(w)}">${esc(w)}</button>`).join('');
+}
+function renderStats() {
+  const n = state.entries.length;
+  if (!n) { $('#stats').innerHTML = ''; return; }
+  const words = new Set(state.entries.map((e) => wordKey(e.word))).size;
+  const first = state.entries.reduce((a, e) => (new Date(e.recordedAt) < new Date(a) ? e.recordedAt : a), state.entries[0].recordedAt);
+  const fa = ageAt(first);
+  $('#stats').innerHTML = `
+    <div class="stat"><b>${words}</b><span>word${words === 1 ? '' : 's'}</span></div>
+    <div class="stat"><b>${n}</b><span>recording${n === 1 ? '' : 's'}</span></div>
+    <div class="stat"><b>${esc(fa && fa !== 'before birth' ? fa : new Date(first).toLocaleDateString(undefined, { month: 'short', year: '2-digit' }))}</b><span>first word</span></div>`;
+}
+function takeRow(e, showWord = false) {
+  return `<div class="take" data-entry="${esc(e.id)}">
+    ${playBtn(e.id, 'sm')}
+    <div class="tt">
+      ${showWord
+        ? `<div class="tword">${esc(e.word)}${ageTag(e.recordedAt)}</div><div class="small">${esc(fmtDateTime(e.recordedAt))}${e.duration ? ' · ' + fmtDur(e.duration) : ''}</div>`
+        : `<div class="tdate">${esc(fmtDate(e.recordedAt))}${ageTag(e.recordedAt)}</div>`}
+      ${e.note ? `<div class="tnote">${esc(e.note)}</div>` : ''}
+    </div>
+    <button class="edit" data-edit="${esc(e.id)}" aria-label="Edit ${esc(e.word)}">${ICON_EDIT}</button>
+  </div>`;
+}
+function renderRecent() {
+  const recent = [...state.entries].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 3);
+  $('#recentWrap').innerHTML = recent.length
+    ? `<div class="card tl"><h2 style="margin:10px 6px 2px">Just added</h2>${recent.map((e) => takeRow(e, true)).join('')}</div>`
+    : `<div class="card empty"><div class="big">🐣</div><b>No words yet</b>Type a word, tap the big button, and let ${childName() ? esc(childName()) : 'her'} say it.</div>`;
+}
+function renderWords() {
+  const raw = normWord($('#searchWords').value), q = wordKey(raw);
+  const sort = $('#sortWords').value;
+  const groups = groupByWord(state.entries.filter((e) => matches(e, q)));
+  groups.sort(sort === 'az' ? (a, b) => a.key.localeCompare(b.key)
+    : sort === 'recent' ? (a, b) => new Date(b.last) - new Date(a.last)
+    : (a, b) => new Date(a.first) - new Date(b.first));
+  const el = $('#wordsList');
+  if (!state.entries.length) { el.innerHTML = `<div class="card empty"><div class="big">📖</div><b>Your word book is empty</b>Recorded words show up here, with every take grouped together.</div>`; return; }
+  if (!groups.length) { el.innerHTML = `<div class="card empty"><b>No words match “${esc(raw)}”</b><button class="link" data-act="record-q">Record “${esc(raw)}” now</button></div>`; return; }
+  el.innerHTML = groups.map((g) => {
+    const open = state.open.has(g.key) || (q && groups.length <= 3);
+    const fa = ageAt(g.first);
+    return `<div class="card word ${open ? 'open' : ''}" data-group="${esc(g.key)}">
+      <div class="whead">
+        ${playBtn(g.takes[g.takes.length - 1].id)}
+        <button class="wt" data-toggle="${esc(g.key)}" style="text-align:left">
+          <div class="wname">${esc(g.word)}</div>
+          <div class="wmeta">First said ${esc(fmtDate(g.first))}${fa ? ' · ' + esc(fa) : ''}</div>
+        </button>
+        <span class="badge" title="takes">${g.takes.length}</span>
+        <button data-toggle="${esc(g.key)}" aria-label="Show all takes of ${esc(g.word)}">${ICON_CHEV}</button>
+      </div>
+      <div class="takes">
+        ${g.takes.map((e) => takeRow(e)).join('')}
+        <button class="btn ghost addtake" data-newtake="${esc(g.word)}">＋ Record a new take</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderTimeline() {
+  const raw = normWord($('#searchTimeline').value), q = wordKey(raw);
+  const asc = $('#sortTimeline').value === 'asc';
+  const list = state.entries.filter((e) => matches(e, q)).sort((a, b) => (new Date(a.recordedAt) - new Date(b.recordedAt)) * (asc ? 1 : -1));
+  const el = $('#timelineList');
+  if (!state.entries.length) { el.innerHTML = `<div class="card empty"><div class="big">🗓️</div><b>Nothing on the timeline yet</b>Each recording appears here by the date it was said.</div>`; return; }
+  if (!list.length) { el.innerHTML = `<div class="card empty"><b>No recordings match “${esc(raw)}”</b></div>`; return; }
+  let html = '', cur = null, buf = [];
+  const flush = () => {
+    if (!buf.length) return;
+    const a = ageAt(buf[0].recordedAt);
+    html += `<div class="month"><h3>${esc(fmtMonth(buf[0].recordedAt))}</h3><span>${a && a !== 'before birth' ? esc(a) : ''}</span></div><div class="card tl">${buf.map((e) => takeRow(e, true)).join('')}</div>`;
+    buf = [];
+  };
+  for (const e of list) { const d = new Date(e.recordedAt); const k = d.getFullYear() * 12 + d.getMonth(); if (k !== cur) { flush(); cur = k; } buf.push(e); }
+  flush();
+  el.innerHTML = html;
+}
+function renderAll() {
+  renderHeader(); renderBanner(); renderSuggestions(); renderStats(); renderRecent();
+  if (state.view === 'words') renderWords();
+  if (state.view === 'timeline') renderTimeline();
+  setPlayingUI();
+}
+function setView(v) {
+  state.view = v;
+  $$('[data-view]').forEach((s) => s.classList.toggle('hidden', s.dataset.view !== v));
+  $$('nav.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === v));
+  renderAll();
+  window.scrollTo({ top: 0 });
+}
+
+/* ---------------- modals ---------------- */
+function openModal(html, onMount) {
+  const root = $('#modalRoot');
+  root.innerHTML = `<div class="modal"><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div></div>`;
+  const m = $('.modal', root);
+  m.addEventListener('click', (e) => { if (e.target === m) closeModal(); });
+  if (onMount) onMount($('.sheet', root));
+  setPlayingUI();
+}
+function closeModal() { $('#modalRoot').innerHTML = ''; }
+function confirmDialog(title, text, okLabel = 'Delete') {
+  return new Promise((res) => {
+    openModal(`<h2>${esc(title)}</h2><p class="sub" style="margin-top:-6px">${esc(text)}</p>
+      <div class="actions"><button class="btn ghost" data-c="0">Keep it</button><button class="btn danger" data-c="1">${esc(okLabel)}</button></div>`,
+      (s) => { $$('[data-c]', s).forEach((b) => { b.onclick = () => { closeModal(); res(b.dataset.c === '1'); }; }); });
+  });
+}
+function openEdit(id) {
+  const e = state.entries.find((x) => x.id === id); if (!e) return;
+  openModal(`<h2>Edit recording</h2>
+    <div class="fg" style="display:flex;align-items:center;gap:12px">${playBtn(e.id)}<div class="small">${esc(fmtDateTime(e.recordedAt))}${e.duration ? ' · ' + fmtDur(e.duration) : ''}<br>${esc(extFor(e.mime).toUpperCase())} · ${Math.max(1, Math.round((e.size || 0) / 1024))} KB</div></div>
+    <div class="fg"><label class="label" for="eWord">Word</label><input id="eWord" class="field" value="${esc(e.word)}" autocomplete="off" list="wordList"></div>
+    <div class="fg"><label class="label" for="eDate">When</label><input id="eDate" class="field" type="datetime-local" value="${esc(toLocalInput(e.recordedAt))}"><div class="small" id="eAge" style="margin-top:6px"></div></div>
+    <div class="fg"><label class="label" for="eNote">Note</label><textarea id="eNote" class="field" rows="3">${esc(e.note || '')}</textarea></div>
+    <div class="actions"><button class="btn danger" id="eDel">Delete</button><button class="btn" id="eSave">Save</button></div>`,
+  (s) => {
+    const upd = () => { const iso = fromLocalInput($('#eDate', s).value); const a = iso && ageLong(iso); $('#eAge', s).textContent = a ? `Age then: ${a}` : ''; };
+    $('#eDate', s).addEventListener('input', upd); upd();
+    $('#eSave', s).onclick = async () => {
+      const word = normWord($('#eWord', s).value);
+      if (!word) { toast('The word can’t be empty'); return; }
+      const updated = { ...e, word, recordedAt: fromLocalInput($('#eDate', s).value) || e.recordedAt, note: $('#eNote', s).value.trim(), updatedAt: new Date().toISOString() };
+      try { await dbPutEntry(updated); } catch (err) { toast('Could not save: ' + (err.message || err)); return; }
+      Object.assign(e, updated);
+      closeModal(); toast('Saved'); renderAll();
+    };
+    $('#eDel', s).onclick = async () => {
+      closeModal();
+      const ok = await confirmDialog(`Delete “${e.word}”?`, `This recording from ${fmtDate(e.recordedAt)} will be gone for good (unless it’s in a backup).`);
+      if (!ok) return;
+      if (playingId === id) { player.pause(); playingId = null; }
+      await dbDeleteEntry(id);
+      state.entries = state.entries.filter((x) => x.id !== id);
+      if (urlCache.has(id)) { URL.revokeObjectURL(urlCache.get(id)); urlCache.delete(id); }
+      toast('Deleted'); renderAll();
+    };
+  });
+}
+async function openSettings() {
+  let persisted = null, est = null;
+  try { persisted = navigator.storage && navigator.storage.persisted ? await navigator.storage.persisted() : null; } catch (e) {}
+  try { est = navigator.storage && navigator.storage.estimate ? await navigator.storage.estimate() : null; } catch (e) {}
+  const bytes = state.entries.reduce((a, e) => a + (e.size || 0), 0);
+  const last = state.backup.lastAt ? fmtDateTime(state.backup.lastAt) : 'never';
+  openModal(`<h2>Settings</h2>
+    <div class="fg"><label class="label" for="sName">Child’s name</label><input id="sName" class="field" value="${esc(state.settings.name)}" placeholder="e.g. Ava" autocomplete="off"></div>
+    <div class="fg"><label class="label" for="sBirth">Birthday</label><input id="sBirth" class="field" type="date" value="${esc(state.settings.birthdate)}"></div>
+    <button class="btn block" id="sSave">Save</button>
+    <hr>
+    <h2 style="font-size:18px">Backup</h2>
+    <p class="sub" style="margin-top:-8px">Recordings live only on this device. A backup is one .zip with every recording as a normal audio file, plus <code>data.json</code> with the words, dates and notes. Keep a copy in iCloud Drive or Google Drive, or email it to yourself.</p>
+    <p class="small" id="bInfo">${state.entries.length} recordings · ${(bytes / 1048576).toFixed(1)} MB · last backup: ${esc(last)}</p>
+    <div class="actions"><button class="btn sage" id="bExport">Back up now</button><button class="btn ghost" id="bImport">Restore…</button></div>
+    <input type="file" id="importInput" accept=".zip,application/zip,application/x-zip-compressed,application/json,.json" class="hidden">
+    <p class="small mt">Storage: ${persisted === true ? '✅ protected from automatic clean-up' : persisted === false ? '⚠️ the browser may clear data if the device runs low on space. Installing to your home screen helps.' : 'unknown'}${est && est.quota ? ` · ${(est.usage / 1048576).toFixed(1)} MB used` : ''}</p>
+    <hr>
+    <p class="small">Tip: on iPhone, open this page in Safari → Share → <b>Add to Home Screen</b>. On Android, use Chrome’s <b>Install app</b>. On iPhone the home-screen app and the Safari tab keep <i>separate</i> data, so pick one and stick with it.</p>`,
+  (s) => {
+    $('#sSave', s).onclick = async () => {
+      state.settings = { name: normWord($('#sName', s).value), birthdate: $('#sBirth', s).value };
+      await dbSetMeta('settings', state.settings);
+      closeModal(); toast('Saved'); renderAll();
+    };
+    $('#bExport', s).onclick = () => exportBackup();
+    $('#bImport', s).onclick = () => $('#importInput', s).click();
+    $('#importInput', s).onchange = (ev) => importBackup(ev.target.files[0]);
+  });
+}
+function openWelcome() {
+  openModal(`<div style="text-align:center;font-size:48px;margin:4px 0 6px">👶🎙️</div>
+    <h2 style="text-align:center">Welcome to First Words</h2>
+    <p class="sub" style="text-align:center;margin-top:-6px">Record the little voice saying each new word, and hear how it changes as she grows.</p>
+    <div class="fg"><label class="label" for="wName">Her name</label><input id="wName" class="field" placeholder="e.g. Ava" autocomplete="off"></div>
+    <div class="fg"><label class="label" for="wBirth">Birthday</label><input id="wBirth" class="field" type="date"><div class="small" style="margin-top:6px">Used to show her age on every recording, like “1y 3m”.</div></div>
+    <div class="actions"><button class="btn ghost" id="wSkip">Later</button><button class="btn" id="wGo">Let’s go</button></div>`,
+  (s) => {
+    const done = async (save) => {
+      if (save) state.settings = { name: normWord($('#wName', s).value), birthdate: $('#wBirth', s).value };
+      await dbSetMeta('settings', state.settings);
+      await dbSetMeta('welcomed', true);
+      closeModal(); renderAll();
+    };
+    $('#wGo', s).onclick = () => done(true);
+    $('#wSkip', s).onclick = () => done(false);
+  });
+}
+
+/* ---------------- ZIP: tiny store-only writer, store/deflate reader ---------------- */
+const CRC_TABLE = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_TABLE[(c ^ u8[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function dosDateTime(d) {
+  return { time: (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1),
+           date: (Math.max(0, d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate() };
+}
+function makeZip(files) {
+  const enc = new TextEncoder(); const parts = [], central = []; let offset = 0;
+  for (const f of files) {
+    const name = enc.encode(f.name), data = f.data, crc = crc32(data), dt = dosDateTime(f.date || new Date());
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+    lh.setUint16(10, dt.time, true); lh.setUint16(12, dt.date, true); lh.setUint32(14, crc, true);
+    lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+    parts.push(lh.buffer, name, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
+    ch.setUint16(12, dt.time, true); ch.setUint16(14, dt.date, true); ch.setUint32(16, crc, true);
+    ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true); ch.setUint16(28, name.length, true);
+    ch.setUint32(42, offset, true);
+    central.push(ch.buffer, name);
+    offset += 30 + name.length + data.length;
+  }
+  const cdSize = central.reduce((a, p) => a + p.byteLength, 0);
+  const eo = new DataView(new ArrayBuffer(22));
+  eo.setUint32(0, 0x06054b50, true); eo.setUint16(8, files.length, true); eo.setUint16(10, files.length, true);
+  eo.setUint32(12, cdSize, true); eo.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, eo.buffer], { type: 'application/zip' });
+}
+async function readZip(buffer) {
+  const u8 = new Uint8Array(buffer), dv = new DataView(buffer), dec = new TextDecoder();
+  let eo = -1;
+  for (let i = u8.length - 22; i >= Math.max(0, u8.length - 65557); i--) if (dv.getUint32(i, true) === 0x06054b50) { eo = i; break; }
+  if (eo < 0) throw new Error('Not a zip file');
+  const count = dv.getUint16(eo + 10, true); let p = dv.getUint32(eo + 16, true);
+  const out = new Map();
+  for (let n = 0; n < count; n++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) throw new Error('Corrupt zip directory');
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+    const nlen = dv.getUint16(p + 28, true), elen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true), lho = dv.getUint32(p + 42, true);
+    const name = dec.decode(u8.subarray(p + 46, p + 46 + nlen));
+    const start = lho + 30 + dv.getUint16(lho + 26, true) + dv.getUint16(lho + 28, true);
+    let data = u8.subarray(start, start + csize);
+    if (method === 8) { // someone re-zipped the folder with compression
+      if (!window.DecompressionStream) throw new Error('This browser cannot read compressed zips; use the original backup file');
+      data = new Uint8Array(await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+    } else if (method !== 0) throw new Error('Unsupported zip compression');
+    if (!name.endsWith('/') && !name.startsWith('__MACOSX/')) out.set(name, data);
+    p += 46 + nlen + elen + clen;
+  }
+  return out;
+}
+
+/* ---------------- backup / restore ---------------- */
+const slug = (s) => wordKey(s).normalize('NFKD').replace(/[^\w\- ]+/g, '').replace(/\s+/g, '-').slice(0, 40) || 'word';
+const dayStamp = (d) => { d = new Date(d); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+async function buildBackup() {
+  const entries = [...state.entries].sort((a, b) => new Date(a.recordedAt) - new Date(b.recordedAt));
+  const files = [], list = [], enc = new TextEncoder();
+  let i = 0;
+  for (const e of entries) {
+    const raw = await dbGetAudio(e.id);
+    if (!raw) continue;
+    const data = new Uint8Array(raw instanceof Blob ? await raw.arrayBuffer() : raw);
+    const file = `audio/${String(++i).padStart(4, '0')}_${dayStamp(e.recordedAt)}_${slug(e.word)}.${extFor(e.mime)}`;
+    files.push({ name: file, data, date: new Date(e.recordedAt) });
+    list.push({ ...e, file, age: ageAt(e.recordedAt) || undefined });
+  }
+  const meta = { app: 'first-words', format: 1, exportedAt: new Date().toISOString(), settings: state.settings, count: list.length, entries: list };
+  const readme = `First Words backup, ${new Date().toLocaleString()}\n\n` +
+    `${childName() || 'Your child'}: ${list.length} recordings of ${new Set(list.map((e) => wordKey(e.word))).size} words.\n\n` +
+    `- audio/ has every recording as a normal audio file (m4a/webm). Name = number_date_word.\n` +
+    `- data.json has the words, dates, ages and notes.\n\n` +
+    `To restore: open the First Words app, tap the gear (Settings), choose Restore and pick this .zip file.\n\n` +
+    list.map((e) => `${dayStamp(e.recordedAt)}  ${(e.age || '').padEnd(8)} ${e.word}${e.note ? '  (' + e.note.replace(/\s+/g, ' ') + ')' : ''}`).join('\n') + '\n';
+  files.unshift({ name: 'data.json', data: enc.encode(JSON.stringify(meta, null, 2)) }, { name: 'README.txt', data: enc.encode(readme) });
+  const blob = makeZip(files);
+  const name = `first-words-${slug(childName() || 'backup')}-${dayStamp(new Date())}.zip`;
+  return { blob, name, count: list.length };
+}
+async function markBackedUp() {
+  state.backup.lastAt = new Date().toISOString(); state.backup.snoozeUntil = 0;
+  await dbSetMeta('backup', state.backup); renderAll();
+}
+async function exportBackup() {
+  if (!state.entries.length) { toast('Nothing to back up yet'); return; }
+  toast('Packing up recordings…');
+  let b;
+  try { b = await buildBackup(); } catch (e) { console.error(e); toast('Backup failed: ' + (e.message || e)); return; }
+  let file = null; try { file = new File([b.blob], b.name, { type: 'application/zip' }); } catch (e) {}
+  let canShare = false; try { canShare = !!(file && navigator.canShare && navigator.canShare({ files: [file] })); } catch (e) {}
+  // A second tap is needed: share()/download must run inside a fresh user gesture (iOS is strict).
+  openModal(`<div style="text-align:center;font-size:44px">📦</div>
+    <h2 style="text-align:center">Backup ready</h2>
+    <p class="sub" style="text-align:center;margin-top:-6px">${b.count} recordings · ${(b.blob.size / 1048576).toFixed(1)} MB<br><code>${esc(b.name)}</code></p>
+    ${canShare ? `<button class="btn sage block" id="xShare">Save to Files / share…</button><div style="height:10px"></div>` : ''}
+    <button class="btn ${canShare ? 'ghost' : 'sage'} block" id="xDl">Download .zip</button>
+    <p class="small mt" style="text-align:center">Put it somewhere safe that isn’t this phone: iCloud Drive, Google Drive, or email it to yourself.</p>`,
+  (s) => {
+    $('#xDl', s).onclick = async () => {
+      const url = URL.createObjectURL(b.blob);
+      const a = document.createElement('a'); a.href = url; a.download = b.name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      closeModal(); await markBackedUp(); toast('Backup downloaded ✓');
+    };
+    if (canShare) $('#xShare', s).onclick = async () => {
+      try { await navigator.share({ files: [file], title: 'First Words backup' }); closeModal(); await markBackedUp(); toast('Backup saved ✓'); }
+      catch (e) { if (e.name !== 'AbortError') toast('Sharing failed, try Download instead'); }
+    };
+  });
+}
+async function importBackup(file) {
+  if (!file) return;
+  toast('Reading backup…');
+  try {
+    const buf = await file.arrayBuffer();
+    let meta, getAudio;
+    const head = new Uint8Array(buf, 0, Math.min(4, buf.byteLength));
+    if (head[0] === 0x50 && head[1] === 0x4b) {
+      const files = await readZip(buf);
+      const dataName = [...files.keys()].find((n) => n === 'data.json' || n.endsWith('/data.json'));
+      if (!dataName) throw new Error('No data.json inside this zip');
+      const prefix = dataName.slice(0, dataName.length - 'data.json'.length);
+      meta = JSON.parse(new TextDecoder().decode(files.get(dataName)));
+      getAudio = (e) => files.get(prefix + e.file) || files.get(e.file);
+    } else {
+      // Also accept a JSON backup with base64 audio ({ app:'first-words', entries:[{..., audioBase64}] })
+      meta = JSON.parse(new TextDecoder().decode(buf));
+      getAudio = (e) => (e.audioBase64 ? Uint8Array.from(atob(e.audioBase64), (c) => c.charCodeAt(0)) : null);
+    }
+    if (!meta || meta.app !== 'first-words' || !Array.isArray(meta.entries)) throw new Error('This doesn’t look like a First Words backup');
+    const wasClean = backupStatus().unsaved === 0; // nothing local is waiting for a backup
+    const have = new Set(state.entries.map((e) => e.id));
+    let added = 0, skipped = 0, bad = 0;
+    for (const r of meta.entries) {
+      if (!r || !r.id || !r.word) { bad++; continue; }
+      if (have.has(r.id)) { skipped++; continue; }
+      const data = getAudio(r);
+      if (!data) { bad++; continue; }
+      const ab = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
+      const entry = { id: r.id, word: normWord(r.word), recordedAt: r.recordedAt || new Date().toISOString(), note: r.note || '',
+        mime: r.mime || 'audio/mp4', duration: r.duration || null, size: ab.byteLength,
+        createdAt: r.createdAt || new Date().toISOString(), importedAt: new Date().toISOString() };
+      await dbPutEntry(entry, ab);
+      state.entries.push(entry); have.add(entry.id); added++;
+    }
+    if (meta.settings && !state.settings.name && !state.settings.birthdate) {
+      state.settings = { name: meta.settings.name || '', birthdate: meta.settings.birthdate || '' };
+      await dbSetMeta('settings', state.settings);
+    }
+    await dbSetMeta('welcomed', true);
+    // Restored recordings are by definition already in a backup file.
+    if (added && wasClean) { state.backup.lastAt = new Date().toISOString(); await dbSetMeta('backup', state.backup); }
+    closeModal(); renderAll(); requestPersist();
+    prefetchAudio(state.entries.map((e) => e.id));
+    toast(`Restored ${added} recording${added === 1 ? '' : 's'}` + (skipped ? ` · ${skipped} already here` : '') + (bad ? ` · ${bad} unreadable` : ''));
+  } catch (e) {
+    console.error(e); toast('Restore failed: ' + (e.message || e));
+  }
+}
+
+/* ---------------- toast ---------------- */
+let toastTimer;
+function toast(msg) {
+  let t = $('.toast');
+  if (!t) { t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+  t.textContent = msg; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.remove(), 2800);
+}
+
+/* ---------------- events ---------------- */
+function bind() {
+  $$('nav.tabs button').forEach((b) => { b.onclick = () => setView(b.dataset.tab); });
+  $('#settingsBtn').onclick = openSettings;
+  $('#recBtn').onclick = () => (isRecording() ? stopRecording() : startRecording());
+  $('#saveBtn').onclick = savePending;
+  $('#discardBtn').onclick = discardPending;
+  $('#wordInput').addEventListener('input', updatePreviewWord);
+  $('#wordInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
+  $('#previewPlay').innerHTML = PLAY_INNER;
+  $('#previewPlay').onclick = () => {
+    if (!rec.previewUrl) return;
+    if (playingId === '__preview' && player.src) { if (player.paused) player.play().catch(playErr); else player.pause(); return; }
+    playingId = '__preview'; player.src = rec.previewUrl; player.play().catch(playErr);
+  };
+  $('#addFileBtn').onclick = () => $('#audioFileInput').click();
+  $('#audioFileInput').onchange = (e) => { addAudioFile(e.target.files[0]); e.target.value = ''; };
+  $('#searchWords').addEventListener('input', renderWords);
+  $('#sortWords').addEventListener('change', renderWords);
+  $('#searchTimeline').addEventListener('input', renderTimeline);
+  $('#sortTimeline').addEventListener('change', renderTimeline);
+
+  document.addEventListener('click', async (ev) => {
+    const t = ev.target.closest('button'); if (!t) return;
+    if (t.matches('.play[data-id]')) { togglePlay(t.dataset.id); return; }
+    if (t.dataset.edit) { openEdit(t.dataset.edit); return; }
+    if (t.dataset.word) { $('#wordInput').value = t.dataset.word; updatePreviewWord(); return; }
+    if (t.dataset.toggle) {
+      const k = t.dataset.toggle; const card = t.closest('.word');
+      const open = !card.classList.contains('open');
+      card.classList.toggle('open', open); if (open) state.open.add(k); else state.open.delete(k);
+      return;
+    }
+    if (t.dataset.newtake) { setView('record'); $('#wordInput').value = t.dataset.newtake; updatePreviewWord(); return; }
+    if (t.dataset.act === 'backup') { exportBackup(); return; }
+    if (t.dataset.act === 'snooze') { state.backup.snoozeUntil = Date.now() + 3 * 86400000; await dbSetMeta('backup', state.backup); renderBanner(); return; }
+    if (t.dataset.act === 'record-q') { const w = normWord($('#searchWords').value); setView('record'); $('#wordInput').value = w; updatePreviewWord(); }
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+  // Don't silently lose an unsaved recording.
+  window.addEventListener('beforeunload', (e) => { if (rec.pending || isRecording()) { e.preventDefault(); e.returnValue = ''; } });
+}
+
+/* ---------------- boot ---------------- */
+async function boot() {
+  bind();
+  try { db = await openDB(); }
+  catch (e) {
+    document.querySelector('.wrap').insertAdjacentHTML('afterbegin', `<div class="warn" style="margin-bottom:12px">Storage is unavailable in this browser mode (private browsing?). Recordings can’t be saved here.</div>`);
+    return;
+  }
+  state.entries = await dbAllEntries();
+  state.settings = Object.assign({ name: '', birthdate: '' }, await dbGetMeta('settings'));
+  state.backup = Object.assign({ lastAt: null, snoozeUntil: 0 }, await dbGetMeta('backup'));
+  const p = micProblem();
+  if (p) $('#micWarn').innerHTML = `<div class="warn">${esc(p)}</div>`;
+  renderAll();
+  prefetchAudio(state.entries.map((e) => e.id));
+  if (!(await dbGetMeta('welcomed')) && !state.entries.length) openWelcome();
+  window.__fw = { state, ready: true }; // hook for automated tests
+}
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch((e) => console.warn('SW', e)));
+}
+boot();
+</script>
+</body>
+</html>
